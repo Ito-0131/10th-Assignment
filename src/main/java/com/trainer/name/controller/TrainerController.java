@@ -1,5 +1,8 @@
-package com.trainer.name;
+package com.trainer.name.controller;
 
+import com.trainer.name.entity.Trainer;
+import com.trainer.name.exception.TrainerNotFoundException;
+import com.trainer.name.service.TrainerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +24,7 @@ public class TrainerController {
     public List<Trainer> findTrainers(
             @RequestParam(required = false) String startingWith,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
             @RequestParam(required = false) Integer trainerId) throws TrainerNotFoundException {
 
         if (startingWith != null) {
@@ -29,6 +33,10 @@ public class TrainerController {
 
         if (name != null) {
             return trainerService.findByName(name);
+        }
+
+        if (email != null) {
+            return trainerService.findByEmail(email);
         }
 
         if (trainerId != null) {
@@ -42,4 +50,9 @@ public class TrainerController {
         Optional<Trainer> trainer = trainerService.findByTrainerId(trainerId);
         return trainer.map(Collections::singletonList).orElse(Collections.emptyList());
     }
+    /*例：http://localhost:8080/trainers?email=Sazare318@heisei.bluebe
+      例：http://localhost:8080/trainers?trainerId=1
+      例：http://localhost:8080/trainers
+      例：http://localhost:8080/trainers?name=キハダ
+      例：http://localhost:8080/trainers?startingWith=あ */
 }

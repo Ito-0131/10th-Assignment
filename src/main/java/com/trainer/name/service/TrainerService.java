@@ -1,5 +1,8 @@
-package com.trainer.name;
+package com.trainer.name.service;
 
+import com.trainer.name.entity.Trainer;
+import com.trainer.name.exception.TrainerNotFoundException;
+import com.trainer.name.mapper.TrainerMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

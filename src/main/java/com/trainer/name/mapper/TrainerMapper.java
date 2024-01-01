@@ -1,5 +1,6 @@
-package com.trainer.name;
+package com.trainer.name.mapper;
 
+import com.trainer.name.entity.Trainer;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
