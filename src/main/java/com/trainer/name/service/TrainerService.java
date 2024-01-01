@@ -49,10 +49,10 @@ public class TrainerService {
         return trainers;
     }
 
-    public Optional<Trainer> findByTrainerId(int trainerId) throws TrainerNotFoundException {
-        Optional<Trainer> trainer = trainerMapper.findByTrainerId(trainerId);
+    public Optional<Trainer> findById(int id) throws TrainerNotFoundException {
+        Optional<Trainer> trainer = trainerMapper.findById(id);
         if (!trainer.isPresent()) {
-            throw new TrainerNotFoundException("trainerIdが" + trainerId + "のトレーナーはいません");
+            throw new TrainerNotFoundException("idが" + id + "のトレーナーはいません");
         }
         return trainer;
     }

@@ -28,7 +28,7 @@ class TrainerMapperTest {
 
         // ログにデータを出力
         for (Trainer trainer : trainers) {
-            System.out.println("Trainer ID: " + trainer.getId() + ", Name: " + trainer.getName() + ", Email: " + trainer.getEmail());
+            System.out.println("ID: " + trainer.getId() + ", Name: " + trainer.getName() + ", Email: " + trainer.getEmail());
         }
 
         assertThat(trainers)

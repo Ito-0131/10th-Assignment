@@ -29,10 +29,10 @@ class TrainerServiceTest {
     void 存在するユーザーのIDを指定したときに正常にユーザーが返されること() throws TrainerNotFoundException {
         // モックの設定
         Trainer expectedTrainer = new Trainer(1, "ゼイユ", "Zeiyu498@merry.bluebe");
-        when(trainerMapper.findByTrainerId(1)).thenReturn(Optional.of(expectedTrainer));
+        when(trainerMapper.findById(1)).thenReturn(Optional.of(expectedTrainer));
 
         // テスト対象メソッドの呼び出し
-        Optional<Trainer> actual = trainerService.findByTrainerId(1);
+        Optional<Trainer> actual = trainerService.findById(1);
 
         // 具体的な例外をスローするように修正
         assertThat(actual.orElseThrow(), equalTo(expectedTrainer));
@@ -40,11 +40,11 @@ class TrainerServiceTest {
 
     @Test
     void 存在しないユーザーのIDを指定したときに例外処理が返される() {
-        when(trainerMapper.findByTrainerId(999)).thenReturn(Optional.empty());
+        when(trainerMapper.findById(999)).thenReturn(Optional.empty());
 
         // テスト対象メソッドの呼び出しと例外の確認を同時に行う
         TrainerNotFoundException thrown = assertThrows(TrainerNotFoundException.class, () ->
-                trainerService.findByTrainerId(999));
+                trainerService.findById(999));
 
         // 例外メッセージを定数にしておく
         final String expectedMessage = "trainerIdが999のトレーナーはいません";

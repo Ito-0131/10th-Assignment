@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class TrainerController {
@@ -25,7 +23,7 @@ public class TrainerController {
             @RequestParam(required = false) String startingWith,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) Integer trainerId) throws TrainerNotFoundException {
+            @RequestParam(required = false) Integer id) throws TrainerNotFoundException {
 
         if (startingWith != null) {
             return trainerService.findByNameStartingWith(startingWith);
@@ -39,19 +37,16 @@ public class TrainerController {
             return trainerService.findByEmail(email);
         }
 
-        if (trainerId != null) {
-            return findTrainerById(trainerId);
+        if (id != null) {
+            return trainerService.findById(id).map(List::of).orElseThrow(() ->
+                    new TrainerNotFoundException("Trainer with id " + id + " not found"));
         }
 
         return trainerService.findAll();
     }
 
-    private List<Trainer> findTrainerById(Integer trainerId) throws TrainerNotFoundException {
-        Optional<Trainer> trainer = trainerService.findByTrainerId(trainerId);
-        return trainer.map(Collections::singletonList).orElse(Collections.emptyList());
-    }
     /*例：http://localhost:8080/trainers?email=Sazare318@heisei.bluebe
-      例：http://localhost:8080/trainers?trainerId=1
+      例：http://localhost:8080/id=1
       例：http://localhost:8080/trainers
       例：http://localhost:8080/trainers?name=キハダ
       例：http://localhost:8080/trainers?startingWith=あ */
