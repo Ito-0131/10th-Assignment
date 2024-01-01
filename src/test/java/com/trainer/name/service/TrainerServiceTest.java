@@ -25,34 +25,37 @@ class TrainerServiceTest {
     @Mock
     TrainerMapper trainerMapper;
 
+    private static final int EXISTING_USER_ID = 1;
+    private static final int NON_EXISTING_USER_ID = 999;
+
     @Test
-    void 存在するユーザーのIDを指定したときに正常にユーザーが返されること() throws TrainerNotFoundException {
+    void shouldReturnUserWhenExistingUserIdIsProvided() throws TrainerNotFoundException {
         // モックの設定
-        Trainer expectedTrainer = new Trainer(1, "ゼイユ", "Zeiyu498@merry.bluebe");
-        when(trainerMapper.findById(1)).thenReturn(Optional.of(expectedTrainer));
+        Trainer expectedTrainer = new Trainer(EXISTING_USER_ID, "ゼイユ", "Zeiyu498@merry.bluebe");
+        when(trainerMapper.findById(EXISTING_USER_ID)).thenReturn(Optional.of(expectedTrainer));
 
         // テスト対象メソッドの呼び出し
-        Optional<Trainer> actual = trainerService.findById(1);
+        Optional<Trainer> actual = trainerService.findById(EXISTING_USER_ID);
 
         // 具体的な例外をスローするように修正
         assertThat(actual.orElseThrow(), equalTo(expectedTrainer));
     }
 
     @Test
-    void 存在しないユーザーのIDを指定したときに例外処理が返される() {
-        when(trainerMapper.findById(999)).thenReturn(Optional.empty());
+    void shouldThrowExceptionWhenNonExistingUserIdIsProvided() {
+        when(trainerMapper.findById(NON_EXISTING_USER_ID)).thenReturn(Optional.empty());
 
         // テスト対象メソッドの呼び出しと例外の確認を同時に行う
         TrainerNotFoundException thrown = assertThrows(TrainerNotFoundException.class, () ->
-                trainerService.findById(999));
+                trainerService.findById(NON_EXISTING_USER_ID));
 
         // 例外メッセージを定数にしておく
-        final String expectedMessage = "trainerIdが999のトレーナーはいません";
+        final String expectedMessage = "idが" + NON_EXISTING_USER_ID + "のトレーナーはいません";
         assertThat(thrown.getMessage(), equalTo(expectedMessage));
     }
 
     @Test
-    void 全てのユーザーが取得できること() throws TrainerNotFoundException {
+    void shouldReturnAllUsers() throws TrainerNotFoundException {
         // モックの設定
         List<Trainer> trainerList = Arrays.asList(
                 new Trainer(1, "ゼイユ", "Zeiyu498@merry.bluebe"),
@@ -65,5 +68,4 @@ class TrainerServiceTest {
 
         assertThat(trainers, equalTo(trainerList));
     }
-
 }
