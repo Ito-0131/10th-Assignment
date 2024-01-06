@@ -6,7 +6,6 @@ import com.trainer.name.mapper.TrainerMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TrainerService {
@@ -49,12 +48,8 @@ public class TrainerService {
         return trainers;
     }
 
-    public Optional<Trainer> findById(int id) throws TrainerNotFoundException {
-        Optional<Trainer> trainer = trainerMapper.findById(id);
-        if (!trainer.isPresent()) {
-            throw new TrainerNotFoundException("idが" + id + "のトレーナーはいません");
-        }
-        return trainer;
+    public Trainer findById(int id) throws TrainerNotFoundException {
+        return trainerMapper.findById(id).orElseThrow(() -> new TrainerNotFoundException("idが" + id + "のトレーナーはいません"));
     }
 
 }

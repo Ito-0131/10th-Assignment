@@ -43,8 +43,7 @@ public class TrainerController {
     // GET(Read処理)
     @GetMapping("/trainers/{id}")
     public Trainer findTrainer(@PathVariable Integer id) throws TrainerNotFoundException {
-        return trainerService.findById(id).orElseThrow(() ->
-                new TrainerNotFoundException("Trainer with id " + id + " not found"));
+        return trainerService.findById(id);
     }
 
     /*例：http://localhost:8080/trainers?email=Sazare318@heisei.bluebe
