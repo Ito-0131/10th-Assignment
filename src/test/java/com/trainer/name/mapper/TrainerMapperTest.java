@@ -88,7 +88,7 @@ class TrainerMapperTest {
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void 指定されたメールアドレスが存在しない場合_空のOptionalが返される() {
+    void 指定されたメールアドレスが存在しない場合_空のListが返される() {
         // テストデータセットには存在しないメールアドレス
         String email = "nonexistent@example.com";
 
