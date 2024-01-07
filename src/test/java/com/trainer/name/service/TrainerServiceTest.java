@@ -3,6 +3,7 @@ package com.trainer.name.service;
 import com.trainer.name.entity.Trainer;
 import com.trainer.name.exception.TrainerNotFoundException;
 import com.trainer.name.mapper.TrainerMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +33,7 @@ class TrainerServiceTest {
     private static final int NON_EXISTING_USER_ID = 999;
 
     @Test
-    void 既存のユーザーIDが提供された場合にユーザーを返す() throws TrainerNotFoundException {
+    void 存在するユーザーIDが提供された場合にユーザーを返す() throws TrainerNotFoundException {
         // モックの設定
         Trainer expectedTrainer = new Trainer(EXISTING_USER_ID, "ゼイユ", "Zeiyu498@merry.bluebe");
         when(trainerMapper.findById(EXISTING_USER_ID)).thenReturn(Optional.of(expectedTrainer));
@@ -45,7 +47,7 @@ class TrainerServiceTest {
 
     @Test
     void 存在しないユーザーIDが提供された場合に例外をスローするかどうか() {
-        when(trainerMapper.findById(NON_EXISTING_USER_ID)).thenReturn(Optional.empty());
+        when(trainerMapper.findById(NON_EXISTING_USER_ID)).thenReturn(empty());
 
         // テスト対象メソッドの呼び出しと例外の確認を同時に行う
         TrainerNotFoundException thrown = assertThrows(TrainerNotFoundException.class, () ->
@@ -159,4 +161,33 @@ class TrainerServiceTest {
         final String expectedMessage = "トレーナーはいません";
         assertThat(thrown.getMessage(), equalTo(expectedMessage));
     }
+
+    @Test
+    void すべてのユーザーが存在しない場合に空のリストを返すかどうか() throws TrainerNotFoundException {
+        // モックの設定
+        when(trainerMapper.findAll()).thenReturn(Collections.emptyList());
+
+        // テスト対象メソッドの呼び出し
+        List<Trainer> actual = trainerService.findAll();
+
+        //期待される結果と一致することを確認
+        assertThat(actual, Matchers.empty());
+    }
+
+    @Test
+    void すべてのユーザーが存在する場合に全てのユーザーを返す() throws TrainerNotFoundException {
+        // モックの設定
+        List<Trainer> allTrainers = Arrays.asList(
+                new Trainer(1, "ユーザー1", "user1@example.com"),
+                new Trainer(2, "ユーザー2", "user2@example.com")
+        );
+        when(trainerMapper.findAll()).thenReturn(allTrainers);
+
+        // テスト対象メソッドの呼び出し
+        List<Trainer> actual = trainerService.findAll();
+
+        // 期待される結果と一致することを確認
+        assertThat(actual, equalTo(allTrainers));
+    }
+
 }
