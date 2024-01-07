@@ -2,7 +2,6 @@ package com.trainer.name.integrationtest;
 
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
-import com.trainer.name.exception.TrainerNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -78,28 +77,16 @@ public class TrainerRestApiIntegrationTest {
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void 指定されたIDのトレーナーが取得されること() throws Exception, TrainerNotFoundException {
+    void 指定されたIDのトレーナーが取得されること() throws Exception {
         int existingTrainerId = 1;
 
-        try {
-            String response = mockMvc.perform(MockMvcRequestBuilders.get("/trainers/" + existingTrainerId))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/trainers/" + existingTrainerId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-            // 期待されるJSONデータと応答を検証するアサーションを追加
-            JSONAssert.assertEquals(
-                    "{\"id\":1,\"name\":\"ゼイユ\",\"email\":\"Zeiyu498@merry.bluebe\"}",
-                    response, JSONCompareMode.STRICT);
-
-        } catch (Exception e) {
-            // 例外を処理します
-            if (e.getCause() instanceof TrainerNotFoundException) {
-                throw (TrainerNotFoundException) e.getCause();
-            } else {
-                // トレーナーが見つからなかった場合にTrainerNotFoundExceptionをスロー
-                throw new TrainerNotFoundException("指定されたトレーナーが見つかりませんでした。");
-            }
-        }
+        // 期待されるJSONデータと応答を検証するアサーションを追加
+        JSONAssert.assertEquals(
+                "{\"id\":1,\"name\":\"ゼイユ\",\"email\":\"Zeiyu498@merry.bluebe\"}",
+                response, JSONCompareMode.STRICT);
     }
-
 }
