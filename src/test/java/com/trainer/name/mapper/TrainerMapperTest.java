@@ -116,7 +116,7 @@ class TrainerMapperTest {
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void findByName_指定された名前のユーザーが存在しない場合_空のOptionalが返される() {
+    void findByName_指定された名前のユーザーが存在しない場合_空のListが返される() {
         // テストデータセットには存在しない名前
         String name = "nonexistent";
 
