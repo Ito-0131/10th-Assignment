@@ -53,7 +53,7 @@ public class TrainerService {
         return trainerMapper.findById(id).orElseThrow(() -> new TrainerNotFoundException("idが" + id + "のトレーナーはいません"));
     }
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         int count = trainerMapper.countByEmail(email);
         return count == 0;
     }
