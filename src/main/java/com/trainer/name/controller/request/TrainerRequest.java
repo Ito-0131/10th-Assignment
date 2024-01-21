@@ -1,16 +1,13 @@
 package com.trainer.name.controller.request;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class TrainerRequest {
-    @NotNull(message = "Name cannot be null")
     @NotBlank(message = "Name cannot be blank")
     @Size(min = 1, message = "Name must be at least 1 character")
     private String name;
 
-    @NotNull(message = "Email cannot be null")
     @NotBlank(message = "Email cannot be blank")
     @Size(min = 1, message = "Email must be at least 1 character")
     private String email;
