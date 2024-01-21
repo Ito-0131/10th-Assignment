@@ -3,7 +3,6 @@ package com.trainer.name.service;
 import com.trainer.name.entity.Trainer;
 import com.trainer.name.exception.TrainerNotFoundException;
 import com.trainer.name.mapper.TrainerMapper;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,10 +58,9 @@ public class TrainerService {
     }
 
     public Trainer insert(String name, String email) {
-        if (StringUtils.isBlank(name) || StringUtils.isBlank(email)) {
+        if (name == null || email == null || name.trim().isEmpty() || email.trim().isEmpty()) {
             throw new IllegalArgumentException("名前とメールアドレスは必須です");
         }
-
         if (!isEmailUnique(email)) {
             throw new IllegalArgumentException("このメールアドレスは既に使用されています");
         }
@@ -71,6 +69,5 @@ public class TrainerService {
         trainerMapper.insert(trainer);
         return trainer;
     }
-
 
 }
