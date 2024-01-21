@@ -13,9 +13,6 @@ public class TrainerRequest {
     private String email;
 
     public TrainerRequest(String name, String email) {
-        if (name == null || email == null) {
-            throw new IllegalArgumentException("名前とメールアドレスはnullにできません");
-        }
         this.name = name;
         this.email = email;
     }
