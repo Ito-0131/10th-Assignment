@@ -31,4 +31,7 @@ public interface TrainerMapper {
     @Select("SELECT COUNT(*) FROM trainers WHERE email = #{email}")
     int countByEmail(String email);
 
+    @Select("SELECT COUNT(*) FROM trainers WHERE name = #{name}")
+    int countByName(String name);
+
 }

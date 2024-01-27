@@ -3,14 +3,16 @@ package com.trainer.name.controller;
 import com.trainer.name.controller.request.TrainerRequest;
 import com.trainer.name.controller.response.TrainerResponse;
 import com.trainer.name.entity.Trainer;
+import com.trainer.name.exception.DuplicateEmailException;
+import com.trainer.name.exception.DuplicateNameException;
 import com.trainer.name.exception.TrainerNotFoundException;
 import com.trainer.name.service.TrainerService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -65,9 +67,12 @@ public class TrainerController {
             URI location = uriBuilder.path("/trainers/{id}").buildAndExpand(trainer.getId()).toUri();
             TrainerResponse body = new TrainerResponse("トレーナーを作成しました");
             return ResponseEntity.created(location).body(body);
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateEmailException e) {
+            return ResponseEntity.badRequest().body(new TrainerResponse(e.getMessage()));
+        } catch (DuplicateNameException e) {
             return ResponseEntity.badRequest().body(new TrainerResponse(e.getMessage()));
         }
+
     }
 
 }

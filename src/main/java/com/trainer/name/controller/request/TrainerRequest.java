@@ -1,14 +1,16 @@
 package com.trainer.name.controller.request;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import com.trainer.name.exception.NoFullWidthSpaceValidator;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class TrainerRequest {
-    @NotBlank(message = "Name cannot be blank")
+    @NotBlank(message = "名前は必須項目です")
     @Size(min = 1, message = "Name must be at least 1 character")
     private String name;
 
-    @NotBlank(message = "Email cannot be blank")
+    @NoFullWidthSpaceValidator.NoFullWidthSpace(message = "全角スペースは使用できません")
+    @NotBlank(message = "メールアドレスは必須項目です")
     @Size(min = 1, message = "Email must be at least 1 character")
     private String email;
 
