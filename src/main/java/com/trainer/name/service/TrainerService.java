@@ -1,6 +1,8 @@
 package com.trainer.name.service;
 
 import com.trainer.name.entity.Trainer;
+import com.trainer.name.exception.DuplicateEmailException;
+import com.trainer.name.exception.DuplicateNameException;
 import com.trainer.name.exception.TrainerNotFoundException;
 import com.trainer.name.mapper.TrainerMapper;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,29 @@ public class TrainerService {
 
     public Trainer findById(int id) throws TrainerNotFoundException {
         return trainerMapper.findById(id).orElseThrow(() -> new TrainerNotFoundException("idが" + id + "のトレーナーはいません"));
+    }
+
+    private boolean isEmailUnique(String email) {
+        int count = trainerMapper.countByEmail(email);
+        return count == 0;
+    }
+
+    public Trainer insert(String name, String email) throws DuplicateEmailException, DuplicateNameException {
+        if (!isEmailUnique(email)) {
+            throw new DuplicateEmailException("このメールアドレスは既に使用されています");
+        }
+        if (!isNameUnique(name)) {
+            throw new DuplicateNameException("この名前は既に使用されています");
+        }
+
+        Trainer trainer = new Trainer(null, name, email);
+        trainerMapper.insert(trainer);
+        return trainer;
+    }
+
+    private boolean isNameUnique(String name) {
+        int count = trainerMapper.countByName(name);
+        return count == 0;
     }
 
 }
