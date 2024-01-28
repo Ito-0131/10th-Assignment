@@ -1,2 +1,8 @@
-package com.trainer.name.exception;public class DuplicateException {
+package com.trainer.name.exception;
+
+public class DuplicateException extends RuntimeException {
+
+    public DuplicateException(String message) {
+        super(message);
+    }
 }

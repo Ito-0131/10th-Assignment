@@ -3,8 +3,6 @@ package com.trainer.name.controller;
 import com.trainer.name.controller.request.TrainerRequest;
 import com.trainer.name.controller.response.TrainerResponse;
 import com.trainer.name.entity.Trainer;
-import com.trainer.name.exception.DuplicateEmailException;
-import com.trainer.name.exception.DuplicateNameException;
 import com.trainer.name.exception.TrainerNotFoundException;
 import com.trainer.name.service.TrainerService;
 import jakarta.validation.Valid;
@@ -62,17 +60,10 @@ public class TrainerController {
     // POST（Create処理）
     @PostMapping("/trainers")
     public ResponseEntity<TrainerResponse> insert(@Valid @RequestBody TrainerRequest trainerRequest, UriComponentsBuilder uriBuilder) {
-        try {
-            Trainer trainer = trainerService.insert(trainerRequest.getName(), trainerRequest.getEmail());
-            URI location = uriBuilder.path("/trainers/{id}").buildAndExpand(trainer.getId()).toUri();
-            TrainerResponse body = new TrainerResponse("トレーナーを作成しました");
-            return ResponseEntity.created(location).body(body);
-        } catch (DuplicateEmailException e) {
-            return ResponseEntity.badRequest().body(new TrainerResponse(e.getMessage()));
-        } catch (DuplicateNameException e) {
-            return ResponseEntity.badRequest().body(new TrainerResponse(e.getMessage()));
-        }
-
+        Trainer trainer = trainerService.insert(trainerRequest.getName(), trainerRequest.getEmail());
+        URI location = uriBuilder.path("/trainers/{id}").buildAndExpand(trainer.getId()).toUri();
+        TrainerResponse body = new TrainerResponse("トレーナーを作成しました");
+        return ResponseEntity.created(location).body(body);
     }
 
 }
