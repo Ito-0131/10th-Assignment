@@ -1,11 +1,14 @@
 package com.trainer.name.service;
 
 import com.trainer.name.entity.Trainer;
+import com.trainer.name.exception.DuplicateEmailException;
+import com.trainer.name.exception.DuplicateNameException;
 import com.trainer.name.exception.TrainerNotFoundException;
 import com.trainer.name.mapper.TrainerMapper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +31,8 @@ class TrainerServiceTest {
     TrainerService trainerService;
     @Mock
     TrainerMapper trainerMapper;
+    @Captor
+    ArgumentCaptor<Trainer> trainerCaptor;
 
     private static final int EXISTING_USER_ID = 1;
     private static final int NON_EXISTING_USER_ID = 999;
@@ -163,15 +168,17 @@ class TrainerServiceTest {
     }
 
     @Test
-    void すべてのユーザーが存在しない場合に空のリストを返すかどうか() throws TrainerNotFoundException {
+    void すべてのユーザーが存在しない場合にエラーを返すかどうか() {
         // モックの設定
         when(trainerMapper.findAll()).thenReturn(Collections.emptyList());
 
-        // テスト対象メソッドの呼び出し
-        List<Trainer> actual = trainerService.findAll();
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        TrainerNotFoundException thrown = assertThrows(TrainerNotFoundException.class, () ->
+                trainerService.findAll());
 
-        //期待される結果と一致することを確認
-        assertThat(actual, Matchers.empty());
+        // 例外メッセージを表示させる
+        final String expectedMessage = "トレーナーはいません";
+        assertThat(thrown.getMessage(), equalTo(expectedMessage));
     }
 
     @Test
@@ -189,5 +196,46 @@ class TrainerServiceTest {
         // 期待される結果と一致することを確認
         assertThat(actual, equalTo(allTrainers));
     }
+
+    @Test
+    void メールアドレスと名前が一意である場合新規トレーナーが正常に追加される() throws DuplicateEmailException, DuplicateNameException {
+        // モックの設定
+        String name = "新しいトレーナー";
+        String email = "new_trainer@example.com";
+        Trainer expectedTrainer = new Trainer(null, name, email);
+        when(trainerMapper.countByEmail(email)).thenReturn(0);
+        when(trainerMapper.countByName(name)).thenReturn(0);
+
+        // テスト対象メソッドの呼び出し
+        Trainer actual = trainerService.insert(name, email);
+
+        // 期待される結果と一致することを確認
+        assertEquals(expectedTrainer, actual);
+    }
+
+    @Test
+    void メールアドレスが既に存在する場合にDuplicateEmailExceptionがスローされる() {
+        // モックの設定
+        String name = "新しいトレーナー";
+        String email = "existing_email@example.com";
+        when(trainerMapper.countByEmail(email)).thenReturn(1);
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(DuplicateEmailException.class, () -> trainerService.insert(name, email));
+    }
+
+    @Test
+    void 名前が既に存在する場合にDuplicateNameExceptionがスローされる() {
+        // モックの設定
+        String name = "既存のトレーナー";
+        String email = "new_trainer@example.com";
+        when(trainerMapper.countByName(name)).thenReturn(1);
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(DuplicateNameException.class, () -> trainerService.insert(name, email));
+    }
+
+    // メールアドレスが無効な場合に適切な例外がスローされることを確認するテスト
+    // 名前が無効な場合に適切な例外がスローされることを確認するテスト
 
 }
