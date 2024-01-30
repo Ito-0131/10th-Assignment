@@ -235,7 +235,4 @@ class TrainerServiceTest {
         assertThrows(DuplicateNameException.class, () -> trainerService.insert(name, email));
     }
 
-    // メールアドレスが無効な場合に適切な例外がスローされることを確認するテスト
-    // 名前が無効な場合に適切な例外がスローされることを確認するテスト
-
 }
