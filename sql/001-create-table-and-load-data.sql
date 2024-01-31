@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS trainers;
 
 CREATE TABLE trainers (
   id int unsigned AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   email VARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY(id)
 );

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -87,6 +88,31 @@ public class TrainerRestApiIntegrationTest {
         // 期待されるJSONデータと応答を検証するアサーションを追加
         JSONAssert.assertEquals(
                 "{\"id\":1,\"name\":\"ゼイユ\",\"email\":\"Zeiyu498@merry.bluebe\"}",
+                response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @DataSet(cleanBefore = true, cleanAfter = true) // テスト前後にデータをクリーンアップ
+    @Transactional
+    void 新しいトレーナーが作成されること() throws Exception {
+        // 作成する新しいトレーナーの情報を指定
+        String newTrainerRequest = """
+                {
+                  "name": "新しいトレーナー",
+                  "email": "newtrainer@example.com"
+                }
+                """;
+
+        // 新しいトレーナーを作成するリクエストを送信
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/trainers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newTrainerRequest))
+                .andExpect(MockMvcResultMatchers.status().isCreated()) // HTTPステータスが201であることを検証
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        // 作成されたトレーナーの情報を検証
+        JSONAssert.assertEquals(
+                "{\"message\":\"トレーナーを作成しました\"}",
                 response, JSONCompareMode.STRICT);
     }
 }

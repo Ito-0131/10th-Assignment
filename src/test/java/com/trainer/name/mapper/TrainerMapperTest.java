@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DBRider
 @MybatisTest
@@ -153,5 +155,83 @@ class TrainerMapperTest {
         assertThat(trainerOptional).isEmpty();
     }
 
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 新しいトレーナーが正常に挿入される() {
+        // テストデータの作成
+        Trainer newTrainer = new Trainer(null, "新しいトレーナー", "new_trainer@example.com");
+
+        // テスト対象メソッドの呼び出し
+        trainerMapper.insert(newTrainer);
+
+        // データベースからテストデータの取得
+        Trainer insertedTrainer = trainerMapper.findById(newTrainer.getId()).get();
+
+        // 取得したデータが期待されるデータと一致することを確認
+        assertEquals(newTrainer.getName(), insertedTrainer.getName());
+        assertEquals(newTrainer.getEmail(), insertedTrainer.getEmail());
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 新しいトレーナーが正常に挿入されてIDが生成される() {
+        // テストデータの作成
+        Trainer newTrainer = new Trainer(null, "新しいトレーナー", "new_trainer@example.com");
+
+        // テスト対象メソッドの呼び出し
+        trainerMapper.insert(newTrainer);
+
+        // IDが生成されていることを確認
+        assertNotNull(newTrainer.getId());
+
+        // データベースからテストデータの取得
+        Optional<Trainer> insertedTrainer = trainerMapper.findById(newTrainer.getId());
+
+        // 取得したデータが期待されるデータと一致することを確認
+        assertTrue(insertedTrainer.isPresent());
+        assertEquals(newTrainer, insertedTrainer.get());
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 重複した名前で新しいトレーナーを作成しようとすると例外がスローされる() {
+        // テストデータの作成
+        Trainer newTrainer = new Trainer(null, "ゼイユ", "new_email@example.com");
+        // 重複エントリの確認
+        assertEquals(1, trainerMapper.countByName(newTrainer.getName()));
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 重複したメールアドレスで新しいトレーナーを作成しようとすると例外がスローされる() {
+        // テストデータの作成
+        Trainer newTrainer = new Trainer(null, "新しいトレーナー", "Zeiyu498@merry.bluebe");
+        // 重複エントリの確認
+        assertEquals(1, trainerMapper.countByEmail(newTrainer.getEmail()));
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 新しいトレーナーの名前が無効な場合に例外がスローされる() {
+        // 無効な名前を持つ新しいトレーナーの作成
+        Trainer newTrainer = new Trainer(null, null, "new_email@example.com");
+        // 例外がスローされることを検証
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.insert(newTrainer));
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 新しいメールアドレスの情報が無効な場合に例外がスローされる() {
+        // 無効なメールアドレスを持つトレーナーの作成
+        Trainer newTrainer = new Trainer(null, "新しいトレーナー", null);
+        // 例外がスローされることを検証
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.insert(newTrainer));
+    }
 
 }

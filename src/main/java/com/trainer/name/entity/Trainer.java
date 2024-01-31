@@ -25,13 +25,14 @@ public class Trainer {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass())
-            return false;
-        Trainer trainer = (Trainer) obj;
-        return id.equals(trainer.id) && name.equals(trainer.name);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Trainer trainer = (Trainer) o;
+        if (id == null) {
+            if (trainer.id != null) return false;
+        } else if (!id.equals(trainer.id)) return false;
+        return true;
     }
 
     @Override
