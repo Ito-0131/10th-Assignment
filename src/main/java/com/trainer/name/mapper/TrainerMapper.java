@@ -2,7 +2,6 @@ package com.trainer.name.mapper;
 
 import com.trainer.name.entity.Trainer;
 import org.apache.ibatis.annotations.*;
-import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ public interface TrainerMapper {
 
     @Insert("INSERT INTO trainers (name, email) VALUES (#{name}, #{email})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    void insert(Trainer trainer) throws DuplicateKeyException;
+    void insert(Trainer trainer);
 
     @Select("SELECT COUNT(*) FROM trainers WHERE email = #{email}")
     int countByEmail(String email);
