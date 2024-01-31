@@ -96,7 +96,12 @@ public class TrainerRestApiIntegrationTest {
     @Transactional
     void 新しいトレーナーが作成されること() throws Exception {
         // 作成する新しいトレーナーの情報を指定
-        String newTrainerRequest = "{\"name\":\"新しいトレーナー\",\"email\":\"newtrainer@example.com\"}";
+        String newTrainerRequest = """
+                {
+                  "name": "新しいトレーナー",
+                  "email": "newtrainer@example.com"
+                }
+                """;
 
         // 新しいトレーナーを作成するリクエストを送信
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/trainers")
