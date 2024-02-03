@@ -66,4 +66,10 @@ public class TrainerController {
         return ResponseEntity.created(location).body(body);
     }
 
+    // PATCH（Update処理）
+    @PatchMapping("/trainers/{id}")
+    public TrainerResponse update(@PathVariable Integer id, @Valid @RequestBody TrainerRequest trainerRequest) throws TrainerNotFoundException {
+        trainerService.update(id, trainerRequest.getName(), trainerRequest.getEmail());
+        return new TrainerResponse("トレーナーを更新しました");
+    }
 }

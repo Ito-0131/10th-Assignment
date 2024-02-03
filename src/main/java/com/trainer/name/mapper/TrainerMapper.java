@@ -34,4 +34,6 @@ public interface TrainerMapper {
     @Select("SELECT COUNT(*) FROM trainers WHERE name = #{name}")
     int countByName(String name);
 
+    @Update("UPDATE trainers SET name = #{name}, email = #{email} WHERE id = #{id}")
+    void update(int id, String name, String email);
 }

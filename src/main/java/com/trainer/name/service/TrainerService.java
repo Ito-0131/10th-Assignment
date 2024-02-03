@@ -77,4 +77,39 @@ public class TrainerService {
         return count == 0;
     }
 
+    public void update(int id, String name, String email) throws TrainerNotFoundException, DuplicateEmailException, DuplicateNameException {
+        // 既存のトレーナーを取得
+        Trainer trainer = findById(id);
+        if (trainer == null) {
+            throw new TrainerNotFoundException("idが" + id + "のトレーナーはいません");
+        }
+
+        // パラメータの検証
+        validateUpdateParameters(name, email, trainer);
+
+        // 更新処理
+        trainerMapper.update(id, name, email);
+    }
+
+    private void validateUpdateParameters(String name, String email, Trainer existingTrainer)
+            throws DuplicateEmailException, DuplicateNameException {
+        // 名前がnullまたは空文字の場合
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("名前は必須です");
+        }
+
+        // メールアドレスがnullまたは空文字の場合
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("メールアドレスは必須です");
+        }
+
+        if (!email.equals(existingTrainer.getEmail()) && !isEmailUnique(email)) {
+            throw new DuplicateEmailException("このメールアドレスは既に使用されています");
+        }
+
+        if (!name.equals(existingTrainer.getName()) && !isNameUnique(name)) {
+            throw new DuplicateNameException("この名前は既に使用されています");
+        }
+    }
+
 }
