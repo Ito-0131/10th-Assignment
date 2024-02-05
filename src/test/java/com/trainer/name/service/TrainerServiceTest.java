@@ -23,6 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -214,7 +215,7 @@ class TrainerServiceTest {
     }
 
     @Test
-    void メールアドレスが既に存在する場合にDuplicateEmailExceptionがスローされる() {
+    void 追加しようとしたメールアドレスが既に存在する場合にDuplicateEmailExceptionがスローされる() {
         // モックの設定
         String name = "新しいトレーナー";
         String email = "existing_email@example.com";
@@ -225,7 +226,7 @@ class TrainerServiceTest {
     }
 
     @Test
-    void 名前が既に存在する場合にDuplicateNameExceptionがスローされる() {
+    void 追加しようとした名前が既に存在する場合にDuplicateNameExceptionがスローされる() {
         // モックの設定
         String name = "既存のトレーナー";
         String email = "new_trainer@example.com";
@@ -235,4 +236,87 @@ class TrainerServiceTest {
         assertThrows(DuplicateNameException.class, () -> trainerService.insert(name, email));
     }
 
+    @Test
+    void 既存のユーザーIDで更新が正常に行われる場合() throws TrainerNotFoundException {
+        // モックの設定
+        int userId = 1;
+        String newName = "新しい名前";
+        String newEmail = "new_email@example.com";
+        Trainer existingTrainer = new Trainer(userId, "既存の名前", "existing_email@example.com");
+        when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
+        when(trainerMapper.countByEmail(newEmail)).thenReturn(0);
+        when(trainerMapper.countByName(newName)).thenReturn(0);
+
+        // テスト対象メソッドの呼び出し
+        trainerService.update(userId, newName, newEmail);
+
+        // 更新されたトレーナーが正しく保存されていることを確認
+        verify(trainerMapper).update(userId, newName, newEmail);
+    }
+
+    @Test
+    void 存在しないユーザーIDで更新されようとした場合に例外をスローするかどうか() {
+        int userId = 999;
+        String name = "名前";
+        String email = "email@example.com";
+        when(trainerMapper.findById(userId)).thenReturn(Optional.empty());
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(TrainerNotFoundException.class, () -> trainerService.update(userId, name, email));
+    }
+
+    @Test
+    void 更新しようとしたメールアドレスが既に存在する場合にDuplicateEmailExceptionがスローされるかどうか() {
+        // モックの設定
+        int userId = 1;
+        String newName = "新しい名前";
+        String newEmail = "Zeiyu498@merry.bluebe";
+        Trainer existingTrainer = new Trainer(userId, "既存の名前", "existing_email@example.com");
+        when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
+        when(trainerMapper.countByEmail(newEmail)).thenReturn(1);
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(DuplicateEmailException.class, () -> trainerService.update(userId, newName, newEmail));
+    }
+
+    @Test
+    void 更新しようとした名前が既に存在する場合にDuplicateNameExceptionがスローされるかどうか() {
+        // モックの設定
+        int userId = 1;
+        String newName = "ゼイユ";
+        String newEmail = "Saiyan8931@moimoi.redbe";
+        Trainer existingTrainer = new Trainer(userId, "既存の名前", "mamyobubo@warikan.be");
+        when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
+        when(trainerMapper.countByName(newName)).thenReturn(1);
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(DuplicateNameException.class, () -> trainerService.update(userId, newName, newEmail));
+    }
+
+    @Test
+    void 無効な名前で更新しようとしたときに例外を返すかどうか() {
+        // モックの設定
+        int userId = 1;
+        String newName = null;
+        String newEmail = "puku85@instmail.com";
+        Trainer existingTrainer = new Trainer(userId, "既存の名前", "puku7895@instmail.uk");
+        when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(DuplicateNameException.class, () -> trainerService.update(userId, newName, newEmail));
+    }
+
+    @Test
+    void 無効なemailで更新しようとしたときに例外を返すかどうか() {
+        // モックの設定
+        int userId = 1;
+        String newName = "新しい名前";
+        String newEmail = null;
+        Trainer existingTrainer = new Trainer(userId, "既存の名前", "puku7895@instmail.uk.co.jp");
+        when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(DuplicateEmailException.class, () -> trainerService.update(userId, newName, newEmail));
+
+    }
 }

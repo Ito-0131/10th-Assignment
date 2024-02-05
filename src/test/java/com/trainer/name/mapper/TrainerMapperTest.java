@@ -217,7 +217,7 @@ class TrainerMapperTest {
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void 新しいトレーナーの名前が無効な場合に例外がスローされる() {
+    void 作成しようとしたトレーナーの名前が無効な場合に例外がスローされる() {
         // 無効な名前を持つ新しいトレーナーの作成
         Trainer newTrainer = new Trainer(null, null, "new_email@example.com");
         // 例外がスローされることを検証
@@ -227,11 +227,104 @@ class TrainerMapperTest {
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void 新しいメールアドレスの情報が無効な場合に例外がスローされる() {
+    void 作成しようとしたメールアドレスの情報が無効な場合に例外がスローされる() {
         // 無効なメールアドレスを持つトレーナーの作成
         Trainer newTrainer = new Trainer(null, "新しいトレーナー", null);
         // 例外がスローされることを検証
         assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.insert(newTrainer));
     }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 既存のトレーナーが正常に更新される() {
+        // テストデータの作成
+        int userId = 1;
+        String newName = "更新されたトレーナー";
+        String newEmail = "updated_trainer@example.com";
+
+        // テスト対象メソッドの呼び出し
+        trainerMapper.update(userId, newName, newEmail);
+
+        // データベースから更新されたトレーナーの取得
+        Trainer updatedTrainer = trainerMapper.findById(userId).get();
+
+        // 更新されたトレーナーの名前とメールアドレスが期待通りであることを確認
+        assertEquals(newName, updatedTrainer.getName());
+        assertEquals(newEmail, updatedTrainer.getEmail());
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 更新しようとしたトレーナーの名前が無効な場合に例外がスローされる() {
+        // 無効な名前を持つ新しいトレーナーの作成
+        int userId = 1;
+        String newName = null;
+        String newEmail = "aqwsedrf@hakusai.com";
+
+        // 例外がスローされることを検証
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(userId, newName, newEmail));
+
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 更新しようとしたトレーナーのメールアドレスが無効な場合に例外がスローされる() {
+        // 無効なメールアドレスを持つトレーナーの作成
+        int userId = 1;
+        String newName = "新しいトレーナー";
+        String newEmail = null;
+
+        // 例外がスローされることを検証
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(userId, newName, newEmail));
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 更新しようとしたトレーナーのメールアドレスが他のトレーナーと重複する場合_例外がスローされる() {
+        // テストデータの作成
+        int userId = 1;
+        String newName = "ザレ";
+        String duplicatedEmail = "Briar8931@usagica.bluebe";
+
+        // 例外がスローされることを検証
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            // テスト対象メソッドの呼び出し
+            trainerMapper.update(userId, newName, duplicatedEmail);
+        });
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 更新しようとしたトレーナーの名前が他のトレーナーと重複する場合_例外がスローされる() {
+        // テストデータの作成
+        int userId = 1;
+        String duplicatedName = "サザレ";  // 他のトレーナーと重複する名前
+        String newEmail = "Briar8931@usagica.bluebe";  // 新しいメールアドレス
+
+        // 例外がスローされることを検証
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            // テスト対象メソッドの呼び出し
+            trainerMapper.update(userId, duplicatedName, newEmail);
+        });
+    }
+
+    @Test
+    void 存在しないユーザーIDで更新されようとした場合に何も更新されない() {
+        int nonExistentUserId = 999;
+        String newName = "新しいトレーナー";
+        String newEmail = "new_email@example.com";
+
+        // 存在しないユーザーIDで更新を試みる
+        int updatedRows = trainerMapper.update(nonExistentUserId, newName, newEmail);
+
+        // 更新された行数が0であることを検証
+        assertEquals(0, updatedRows);
+    }
+
 
 }
