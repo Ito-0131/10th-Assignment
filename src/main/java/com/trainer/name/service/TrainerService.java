@@ -95,12 +95,12 @@ public class TrainerService {
             throws DuplicateEmailException, DuplicateNameException {
         // 名前がnullまたは空文字の場合
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("名前は必須です");
+            throw new DuplicateNameException("名前は必須です");
         }
 
         // メールアドレスがnullまたは空文字の場合
         if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("メールアドレスは必須です");
+            throw new DuplicateEmailException("メールアドレスは必須です");
         }
 
         if (!email.equals(existingTrainer.getEmail()) && !isEmailUnique(email)) {
