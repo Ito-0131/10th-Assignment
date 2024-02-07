@@ -251,7 +251,8 @@ class TrainerServiceTest {
         trainerService.update(userId, newName, newEmail);
 
         // 更新されたトレーナーが正しく保存されていることを確認
-        verify(trainerMapper).update(userId, newName, newEmail);
+        Trainer updatedTrainer = new Trainer(userId, newName, newEmail);
+        verify(trainerMapper).update(updatedTrainer);
     }
 
     @Test
@@ -303,11 +304,11 @@ class TrainerServiceTest {
         when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
 
         // テスト対象メソッドの呼び出しと例外の確認を同時に行う
-        assertThrows(DuplicateNameException.class, () -> trainerService.update(userId, newName, newEmail));
+        assertThrows(IllegalArgumentException.class, () -> trainerService.update(userId, newName, newEmail));
     }
 
     @Test
-    void 無効なemailで更新しようとしたときに例外を返すかどうか() {
+    void 無効なメールアドレスで更新しようとしたときに例外を返すかどうか() {
         // モックの設定
         int userId = 1;
         String newName = "新しい名前";
@@ -316,7 +317,7 @@ class TrainerServiceTest {
         when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
 
         // テスト対象メソッドの呼び出しと例外の確認を同時に行う
-        assertThrows(DuplicateEmailException.class, () -> trainerService.update(userId, newName, newEmail));
+        assertThrows(IllegalArgumentException.class, () -> trainerService.update(userId, newName, newEmail));
 
     }
 }
