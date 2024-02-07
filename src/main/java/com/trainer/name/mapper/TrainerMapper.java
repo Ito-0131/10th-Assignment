@@ -35,5 +35,5 @@ public interface TrainerMapper {
     int countByName(String name);
 
     @Update("UPDATE trainers SET name = #{name}, email = #{email} WHERE id = #{id}")
-    int update(int id, String name, String email);
+    int update(Trainer trainer);
 }
