@@ -1,6 +1,7 @@
 package com.trainer.name.integrationtest;
 
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -118,6 +119,7 @@ public class TrainerRestApiIntegrationTest {
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_updated_trainers.yml")
     @Transactional
     void トレーナーが更新されること() throws Exception {
         int trainerIdToUpdate = 1;
@@ -125,8 +127,8 @@ public class TrainerRestApiIntegrationTest {
         // 更新するトレーナーの情報を指定
         String updatedTrainerRequest = """
                 {
-                  "name": "更新されたトレーナー",
-                  "email": "updatedtrainer@example.com"
+                  "name": "レホール",
+                  "email": "Raifort318@merry.bluebe"
                 }
                 """;
 
@@ -143,6 +145,7 @@ public class TrainerRestApiIntegrationTest {
                 response, JSONCompareMode.STRICT);
     }
 
+
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
@@ -152,8 +155,8 @@ public class TrainerRestApiIntegrationTest {
         // 更新するトレーナーの情報を指定
         String updatedTrainerRequest = """
                 {
-                  "name": "更新されたトレーナー",
-                  "email": "updatedtrainer@example.com"
+                  "name": "レホール",
+                  "email": "Raifort318@merry.bluebe"
                 }
                 """;
 
