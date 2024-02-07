@@ -1,6 +1,7 @@
 package com.trainer.name.mapper;
 
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.trainer.name.entity.Trainer;
 import org.junit.jupiter.api.Test;
@@ -236,36 +237,26 @@ class TrainerMapperTest {
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_updated_trainers.yml")
     @Transactional
     void 既存のトレーナーが正常に更新される() {
         // テストデータの作成
-        int userId = 1;
-        String newName = "更新されたトレーナー";
-        String newEmail = "updated_trainer@example.com";
+        Trainer trainerToUpdate = new Trainer(1, "レホール", "Raifort318@merry.bluebe");
 
         // テスト対象メソッドの呼び出し
-        trainerMapper.update(userId, newName, newEmail);
-
-        // データベースから更新されたトレーナーの取得
-        Trainer updatedTrainer = trainerMapper.findById(userId).get();
-
-        // 更新されたトレーナーの名前とメールアドレスが期待通りであることを確認
-        assertEquals(newName, updatedTrainer.getName());
-        assertEquals(newEmail, updatedTrainer.getEmail());
+        trainerMapper.update(trainerToUpdate);
     }
+
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
     void 更新しようとしたトレーナーの名前が無効な場合に例外がスローされる() {
         // 無効な名前を持つ新しいトレーナーの作成
-        int userId = 1;
-        String newName = null;
-        String newEmail = "aqwsedrf@hakusai.com";
+        Trainer trainer = new Trainer(1, null, "aqwsedrf@hakusai.com");
 
         // 例外がスローされることを検証
-        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(userId, newName, newEmail));
-
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(trainer));
     }
 
     @Test
@@ -273,54 +264,42 @@ class TrainerMapperTest {
     @Transactional
     void 更新しようとしたトレーナーのメールアドレスが無効な場合に例外がスローされる() {
         // 無効なメールアドレスを持つトレーナーの作成
-        int userId = 1;
-        String newName = "新しいトレーナー";
-        String newEmail = null;
+        Trainer trainerToUpdate = new Trainer(1, "新しいトレーナー", null);
 
         // 例外がスローされることを検証
-        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(userId, newName, newEmail));
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(trainerToUpdate));
     }
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void 更新しようとしたトレーナーのメールアドレスが他のトレーナーと重複する場合_例外がスローされる() {
+    void 更新しようとしたトレーナーのメールアドレスが他のトレーナーと重複する場合に例外がスローされる() {
         // テストデータの作成
-        int userId = 1;
-        String newName = "ザレ";
-        String duplicatedEmail = "Briar8931@usagica.bluebe";
+        Trainer trainerToUpdate = new Trainer(1, "ザレ", "Briar8931@usagica.bluebe");
 
         // 例外がスローされることを検証
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            // テスト対象メソッドの呼び出し
-            trainerMapper.update(userId, newName, duplicatedEmail);
-        });
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(trainerToUpdate));
     }
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
     @Transactional
-    void 更新しようとしたトレーナーの名前が他のトレーナーと重複する場合_例外がスローされる() {
+    void 更新しようとしたトレーナーの名前が他のトレーナーと重複する場合に例外がスローされる() {
         // テストデータの作成
-        int userId = 1;
-        String duplicatedName = "サザレ";  // 他のトレーナーと重複する名前
-        String newEmail = "Briar8931@usagica.bluebe";  // 新しいメールアドレス
+        Trainer trainerToUpdate = new Trainer(1, "サザレ", "Briar8931@usagica.bluebe");
 
         // 例外がスローされることを検証
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            // テスト対象メソッドの呼び出し
-            trainerMapper.update(userId, duplicatedName, newEmail);
-        });
+        assertThrows(DataIntegrityViolationException.class, () -> trainerMapper.update(trainerToUpdate));
     }
 
     @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
     void 存在しないユーザーIDで更新されようとした場合に何も更新されない() {
-        int nonExistentUserId = 999;
-        String newName = "新しいトレーナー";
-        String newEmail = "new_email@example.com";
+        Trainer trainerToUpdate = new Trainer(999, "新しいトレーナー", "new_email@example.com");
 
         // 存在しないユーザーIDで更新を試みる
-        int updatedRows = trainerMapper.update(nonExistentUserId, newName, newEmail);
+        int updatedRows = trainerMapper.update(trainerToUpdate);
 
         // 更新された行数が0であることを検証
         assertEquals(0, updatedRows);
