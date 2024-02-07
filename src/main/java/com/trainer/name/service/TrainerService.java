@@ -88,19 +88,20 @@ public class TrainerService {
         validateUpdateParameters(name, email, trainer);
 
         // 更新処理
-        trainerMapper.update(id, name, email);
+        Trainer trainerToUpdate = new Trainer(id, name, email);
+        trainerMapper.update(trainerToUpdate);
     }
 
     private void validateUpdateParameters(String name, String email, Trainer existingTrainer)
             throws DuplicateEmailException, DuplicateNameException {
         // 名前がnullまたは空文字の場合
         if (name == null || name.isEmpty()) {
-            throw new DuplicateNameException("名前は必須です");
+            throw new IllegalArgumentException("名前は必須です");
         }
 
         // メールアドレスがnullまたは空文字の場合
         if (email == null || email.isEmpty()) {
-            throw new DuplicateEmailException("メールアドレスは必須です");
+            throw new IllegalArgumentException("メールアドレスは必須です");
         }
 
         if (!email.equals(existingTrainer.getEmail()) && !isEmailUnique(email)) {
