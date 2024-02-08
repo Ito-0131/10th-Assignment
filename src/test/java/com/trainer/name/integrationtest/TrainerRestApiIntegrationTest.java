@@ -1,6 +1,7 @@
 package com.trainer.name.integrationtest;
 
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.spring.api.DBRider;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -115,4 +116,55 @@ public class TrainerRestApiIntegrationTest {
                 "{\"message\":\"トレーナーを作成しました\"}",
                 response, JSONCompareMode.STRICT);
     }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_updated_trainers.yml")
+    @Transactional
+    void トレーナーが更新されること() throws Exception {
+        int trainerIdToUpdate = 1;
+
+        // 更新するトレーナーの情報を指定
+        String updatedTrainerRequest = """
+                {
+                  "name": "レホール",
+                  "email": "Raifort318@merry.bluebe"
+                }
+                """;
+
+        // トレーナーを更新するリクエストを送信
+        String response = mockMvc.perform(MockMvcRequestBuilders.patch("/trainers/" + trainerIdToUpdate)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedTrainerRequest))
+                .andExpect(MockMvcResultMatchers.status().isOk()) // HTTPステータスが200であることを検証
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        // 期待されるJSONデータと応答を検証するアサーションを追加
+        JSONAssert.assertEquals(
+                "{\"message\":\"トレーナーを更新しました\"}",
+                response, JSONCompareMode.STRICT);
+    }
+
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 存在しないトレーナーが更新されると404エラーが返されること() throws Exception {
+        int nonExistingTrainerId = 100; // 存在しないトレーナーのIDを指定
+
+        // 更新するトレーナーの情報を指定
+        String updatedTrainerRequest = """
+                {
+                  "name": "レホール",
+                  "email": "Raifort318@merry.bluebe"
+                }
+                """;
+
+        // トレーナーを更新するリクエストを送信
+        mockMvc.perform(MockMvcRequestBuilders.patch("/trainers/" + nonExistingTrainerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedTrainerRequest))
+                .andExpect(MockMvcResultMatchers.status().isNotFound()); // HTTPステータスが404であることを検証
+    }
+
 }

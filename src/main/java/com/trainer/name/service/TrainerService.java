@@ -88,7 +88,8 @@ public class TrainerService {
         validateUpdateParameters(name, email, trainer);
 
         // 更新処理
-        trainerMapper.update(id, name, email);
+        Trainer trainerToUpdate = new Trainer(id, name, email);
+        trainerMapper.update(trainerToUpdate);
     }
 
     private void validateUpdateParameters(String name, String email, Trainer existingTrainer)
