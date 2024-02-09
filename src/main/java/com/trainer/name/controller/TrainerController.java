@@ -72,4 +72,11 @@ public class TrainerController {
         trainerService.update(id, trainerRequest.getName(), trainerRequest.getEmail());
         return new TrainerResponse("トレーナーを更新しました");
     }
+
+    // DELETE（Delete処理）
+    @DeleteMapping("/trainers/{id}")
+    public TrainerResponse delete(@PathVariable Integer id) throws TrainerNotFoundException {
+        trainerService.delete(id);
+        return new TrainerResponse("トレーナーを削除しました");
+    }
 }

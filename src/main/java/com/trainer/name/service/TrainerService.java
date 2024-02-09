@@ -113,4 +113,11 @@ public class TrainerService {
         }
     }
 
+    public void delete(int id) throws TrainerNotFoundException {
+        if (!trainerMapper.existsById(id)) {
+            throw new TrainerNotFoundException("idが" + id + "のトレーナーが見つかりません");
+        }
+        trainerMapper.delete(id);
+    }
+
 }

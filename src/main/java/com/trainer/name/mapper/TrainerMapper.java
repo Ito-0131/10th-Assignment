@@ -36,4 +36,10 @@ public interface TrainerMapper {
 
     @Update("UPDATE trainers SET name = #{name}, email = #{email} WHERE id = #{id}")
     int update(Trainer trainer);
+
+    @Delete("DELETE FROM trainers WHERE id = #{id}")
+    int delete(int id);
+
+    @Select("SELECT EXISTS(SELECT 1 FROM trainers WHERE id = #{id})")
+    boolean existsById(int id);
 }
