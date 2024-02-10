@@ -40,6 +40,4 @@ public interface TrainerMapper {
     @Delete("DELETE FROM trainers WHERE id = #{id}")
     int delete(int id);
 
-    @Select("SELECT EXISTS(SELECT 1 FROM trainers WHERE id = #{id})")
-    boolean existsById(int id);
 }
