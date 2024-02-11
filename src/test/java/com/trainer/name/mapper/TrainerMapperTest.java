@@ -307,6 +307,7 @@ class TrainerMapperTest {
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_deleted_trainers.yml")
     @Transactional
     void 既存のトレーナーが正常に削除される() {
         // 削除するトレーナーのID
