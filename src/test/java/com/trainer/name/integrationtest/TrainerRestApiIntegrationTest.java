@@ -169,6 +169,7 @@ public class TrainerRestApiIntegrationTest {
 
     @Test
     @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_deleted_trainers.yml")
     @Transactional
     void トレーナーが削除されること() throws Exception {
         int trainerIdToDelete = 1;
