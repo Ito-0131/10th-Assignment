@@ -330,6 +330,9 @@ class TrainerServiceTest {
 
         // テスト対象メソッドの呼び出し
         trainerService.delete(userId);
+
+        // 削除されたトレーナーが正しく削除されていることを確認
+        verify(trainerMapper).delete(userId);
     }
 
     @Test
