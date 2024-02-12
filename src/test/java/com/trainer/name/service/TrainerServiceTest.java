@@ -320,4 +320,28 @@ class TrainerServiceTest {
         assertThrows(IllegalArgumentException.class, () -> trainerService.update(userId, newName, newEmail));
 
     }
+
+    @Test
+    void 既存のトレーナーが正常に削除される() throws TrainerNotFoundException {
+        // モックの設定
+        int userId = 1;
+        Trainer existingTrainer = new Trainer(userId, "既存の名前", "uku7895@instmail.uk.co.jp");
+        when(trainerMapper.findById(userId)).thenReturn(Optional.of(existingTrainer));
+
+        // テスト対象メソッドの呼び出し
+        trainerService.delete(userId);
+
+        // 削除されたトレーナーが正しく削除されていることを確認
+        verify(trainerMapper).delete(userId);
+    }
+
+    @Test
+    void 存在しないトレーナーを削除しようとしたときに例外を返すかどうか() {
+        // モックの設定
+        int userId = 999;
+        when(trainerMapper.findById(userId)).thenReturn(empty());
+
+        // テスト対象メソッドの呼び出しと例外の確認を同時に行う
+        assertThrows(TrainerNotFoundException.class, () -> trainerService.delete(userId));
+    }
 }

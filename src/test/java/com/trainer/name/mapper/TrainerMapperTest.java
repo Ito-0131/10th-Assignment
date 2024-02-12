@@ -305,5 +305,40 @@ class TrainerMapperTest {
         assertEquals(0, updatedRows);
     }
 
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_deleted_trainers.yml")
+    @Transactional
+    void 既存のトレーナーが正常に削除される() {
+        // 削除するトレーナーのID
+        int trainerId = 1;
+
+        // 削除メソッドを呼び出す
+        int deletedRows = trainerMapper.delete(trainerId);
+
+        // 削除された行数が1であることを確認
+        assertEquals(1, deletedRows);
+
+        // データベースから削除したトレーナーのデータを取得しようとする
+        Optional<Trainer> deletedTrainer = trainerMapper.findById(trainerId);
+
+        // データが存在しないことを確認
+        assertTrue(deletedTrainer.isEmpty());
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 存在しないトレーナーを削除しようとしたときに何も更新されない() {
+        // 存在しないトレーナーのID
+        int trainerId = 999;
+
+        // 削除メソッドを呼び出す
+        int deletedRows = trainerMapper.delete(trainerId);
+
+        // 削除された行数が0であることを確認
+        assertEquals(0, deletedRows);
+
+    }
 
 }

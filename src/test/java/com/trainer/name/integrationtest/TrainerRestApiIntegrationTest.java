@@ -167,4 +167,33 @@ public class TrainerRestApiIntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound()); // HTTPステータスが404であることを検証
     }
 
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @ExpectedDataSet(value = "datasets/expected_deleted_trainers.yml")
+    @Transactional
+    void トレーナーが削除されること() throws Exception {
+        int trainerIdToDelete = 1;
+
+        // トレーナーを削除するリクエストを送信
+        String response = mockMvc.perform(MockMvcRequestBuilders.delete("/trainers/" + trainerIdToDelete))
+                .andExpect(MockMvcResultMatchers.status().isOk()) // HTTPステータスが200であることを検証
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        // 期待されるJSONデータと応答を検証するアサーションを追加
+        JSONAssert.assertEquals(
+                "{\"message\":\"トレーナーを削除しました\"}",
+                response, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @DataSet(value = "datasets/trainers.yml")
+    @Transactional
+    void 存在しないトレーナーが削除されると404エラーが返されること() throws Exception {
+        int nonExistingTrainerId = 100; // 存在しないトレーナーのIDを指定
+
+        // トレーナーを削除するリクエストを送信
+        mockMvc.perform(MockMvcRequestBuilders.delete("/trainers/" + nonExistingTrainerId))
+                .andExpect(MockMvcResultMatchers.status().isNotFound()); // HTTPステータスが404であることを検証
+    }
+
 }
